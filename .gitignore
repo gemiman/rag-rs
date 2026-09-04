@@ -1,0 +1,19 @@
+# 敏感信息（API Key、密钥等）
+.env
+.env.*
+!.env.example
+
+# 依赖与构建产物
+node_modules/
+target/
+dist/
+
+# 运行时数据
+data/
+*.db
+*.db-journal
+
+# 本地工具状态
+.claude/
+.DS_Store
+*.local

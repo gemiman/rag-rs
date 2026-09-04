@@ -1,0 +1,59 @@
+[package]
+name = "rag-backend"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# Web 框架与异步运行时
+axum = { version = "0.8", features = ["multipart"] }
+tokio = { version = "1", features = ["full"] }
+tower = "0.5"
+tower-http = { version = "0.7", features = ["cors", "trace", "limit", "catch-panic"] }
+
+# 序列化
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# 数据库（SQLite）
+sqlx = { version = "0.9", features = ["runtime-tokio", "sqlite", "chrono", "uuid", "macros", "migrate"] }
+
+# 认证
+jsonwebtoken = { version = "11", features = ["rust_crypto"] }
+argon2 = { version = "0.6", features = ["password-hash", "getrandom"] }
+
+# 通用工具
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+anyhow = "1"
+thiserror = "2"
+
+# API 文档（Swagger 等价物）
+utoipa = { version = "5", features = ["axum_extras"] }
+utoipa-swagger-ui = { version = "9", features = ["axum"] }
+
+# RAG 框架
+rig-core = "0.42"
+reqwest = { version = "0.12", features = ["json", "stream"] }
+
+# 向量库 + 缓存（Redis Stack，通过 Docker 运行）
+redis = { version = "1.6", features = ["tokio-comp", "connection-manager"] }
+
+# 日志
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+dotenvy = "0.15"
+
+# 流式输出
+futures = "0.3"
+async-stream = "0.3"
+
+# 文档解析
+calamine = "0.36"
+csv = "1"
+lopdf = "0.36"
+zip = "8.6"
+quick-xml = "0.41"
+
+# 并行处理与缓存
+rayon = "1"
+moka = { version = "0.12", features = ["future"] }
