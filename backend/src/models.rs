@@ -51,3 +51,17 @@ pub struct Document {
 pub fn now() -> String {
     chrono::Utc::now().to_rfc3339()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_now_is_valid_rfc3339() {
+        let s = now();
+        assert!(
+            chrono::DateTime::parse_from_rfc3339(&s).is_ok(),
+            "不是合法的 RFC3339: {s}"
+        );
+    }
+}

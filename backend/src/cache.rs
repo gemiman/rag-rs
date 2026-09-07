@@ -93,3 +93,36 @@ pub async fn set_answer(
         .await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_fnv1a_empty_string() {
+        assert_eq!(fnv1a(""), 0xcbf29ce484222325);
+    }
+
+    #[test]
+    fn test_fnv1a_known_value() {
+        assert_eq!(fnv1a("a"), 0xaf63dc4c8601ec8c);
+    }
+
+    #[test]
+    fn test_fnv1a_is_deterministic() {
+        assert_eq!(fnv1a("hello world"), fnv1a("hello world"));
+    }
+
+    #[test]
+    fn test_fnv1a_different_inputs_differ() {
+        assert_ne!(fnv1a("a"), fnv1a("b"));
+    }
+
+    #[test]
+    fn test_f32_bytes_roundtrip() {
+        let v = vec![1.0f32, -0.5f32, 3.14159f32];
+        let bytes = f32_to_bytes(&v);
+        let back = bytes_to_f32(&bytes);
+        assert_eq!(v, back);
+    }
+}

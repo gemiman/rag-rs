@@ -188,3 +188,55 @@ fn split_long(text: &str, chunk_size: usize, overlap: usize) -> Vec<String> {
     }
     out
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_split_text_short_is_single_chunk() {
+        let chunks = split_text("短短的一句话", 100, 20);
+        assert_eq!(chunks, vec!["短短的一句话".to_string()]);
+    }
+
+    #[test]
+    fn test_split_text_long_is_multiple_chunks_within_size() {
+        let text = "这是一个比较长的文本，用来测试切块逻辑是否能够正确地把内容切成多个片段。";
+        let chunks = split_text(text, 12, 2);
+        assert!(chunks.len() > 1, "应切成多块，实际: {:?}", chunks);
+        for c in &chunks {
+            assert!(c.chars().count() <= 12, "块超长: {:?}", c);
+        }
+    }
+
+    #[test]
+    fn test_split_text_empty_is_empty() {
+        assert!(split_text("", 100, 20).is_empty());
+    }
+
+    #[test]
+    fn test_parse_document_txt() {
+        let out = parse_document("a.txt", "hello".as_bytes()).unwrap();
+        assert_eq!(out, "hello");
+    }
+
+    #[test]
+    fn test_parse_document_md() {
+        let out = parse_document("a.md", "# 标题".as_bytes()).unwrap();
+        assert_eq!(out, "# 标题");
+    }
+
+    #[test]
+    fn test_parse_document_csv() {
+        let csv = "名称,价格\n手机,4999\n电脑,8999\n";
+        let out = parse_document("a.csv", csv.as_bytes()).unwrap();
+        assert!(out.contains("名称: 手机"));
+        assert!(out.contains("价格: 4999"));
+        assert!(out.contains("名称: 电脑"));
+    }
+
+    #[test]
+    fn test_parse_document_unsupported_extension() {
+        assert!(parse_document("a.xyz", b"data").is_err());
+    }
+}

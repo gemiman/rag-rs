@@ -248,3 +248,57 @@ fn v_f32(v: &redis::Value) -> f32 {
         _ => 0.0,
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use redis::Value;
+
+    #[test]
+    fn test_f32_to_bytes_little_endian() {
+        let bytes = f32_to_bytes(&[1.0, 0.5]);
+        assert_eq!(
+            bytes,
+            vec![0x00, 0x00, 0x80, 0x3f, 0x00, 0x00, 0x00, 0x3f]
+        );
+    }
+
+    #[test]
+    fn test_f32_to_bytes_empty() {
+        assert!(f32_to_bytes(&[]).is_empty());
+    }
+
+    #[test]
+    fn test_parse_search_result_single_result() {
+        let v = Value::Array(vec![
+            Value::Int(1),
+            Value::BulkString(b"chunk:1:0".to_vec()),
+            Value::Array(vec![
+                Value::BulkString(b"text".to_vec()),
+                Value::BulkString("商品描述".as_bytes().to_vec()),
+                Value::BulkString(b"document_id".to_vec()),
+                Value::BulkString(b"1".to_vec()),
+                Value::BulkString(b"filename".to_vec()),
+                Value::BulkString("商品A.txt".as_bytes().to_vec()),
+                Value::BulkString(b"chunk_index".to_vec()),
+                Value::BulkString(b"0".to_vec()),
+                Value::BulkString(b"score".to_vec()),
+                Value::BulkString(b"0.85".to_vec()),
+            ]),
+        ]);
+
+        let results = parse_search_result(&v);
+        assert_eq!(results.len(), 1);
+        assert_eq!(results[0].text, "商品描述");
+        assert_eq!(results[0].document_id, 1);
+        assert_eq!(results[0].filename, "商品A.txt");
+        assert_eq!(results[0].chunk_index, 0);
+        assert!((results[0].score - 0.85).abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_parse_search_result_empty() {
+        let results = parse_search_result(&Value::Nil);
+        assert!(results.is_empty());
+    }
+}

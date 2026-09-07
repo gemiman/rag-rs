@@ -95,3 +95,42 @@ impl FromRequestParts<AppState> for AuthUser {
         })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_hash_and_verify_password() {
+        let hash = hash_password("secret123").unwrap();
+        assert!(verify_password("secret123", &hash));
+    }
+
+    #[test]
+    fn test_wrong_password_is_rejected() {
+        let hash = hash_password("secret123").unwrap();
+        assert!(!verify_password("wrong-password", &hash));
+    }
+
+    #[test]
+    fn test_same_password_hashes_differently_due_to_salt() {
+        let h1 = hash_password("same").unwrap();
+        let h2 = hash_password("same").unwrap();
+        assert_ne!(h1, h2);
+    }
+
+    #[test]
+    fn test_jwt_roundtrip() {
+        let token = create_token(42, "alice", true, "my-secret").unwrap();
+        let claims = decode_token(&token, "my-secret").unwrap();
+        assert_eq!(claims.sub, 42);
+        assert_eq!(claims.username, "alice");
+        assert!(claims.is_admin);
+    }
+
+    #[test]
+    fn test_jwt_rejects_wrong_secret() {
+        let token = create_token(1, "bob", false, "secret-a").unwrap();
+        assert!(decode_token(&token, "secret-b").is_err());
+    }
+}
