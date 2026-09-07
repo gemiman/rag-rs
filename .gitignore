@@ -13,7 +13,8 @@ data/
 *.db
 *.db-journal
 
-# 本地工具状态
-.claude/
+# 本地工具状态（保留 .claude/skills/ 项目级技能）
+.claude/*
+!.claude/skills/
 .DS_Store
 *.local
