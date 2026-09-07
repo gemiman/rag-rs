@@ -35,7 +35,7 @@ async fn main() -> anyhow::Result<()> {
 
     // 数据库
     let pool = db::init_pool(&config.database_url).await?;
-    seed_admin(&pool).await?;
+    seed_admin(&pool, &config.admin_password).await?;
 
     // Redis（向量库 + 缓存）
     let redis_client = redis::Client::open(config.redis_url.as_str())?;
@@ -69,15 +69,15 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-/// 首次启动时创建管理员账号 admin / 123456
-async fn seed_admin(pool: &sqlx::SqlitePool) -> anyhow::Result<()> {
+/// 首次启动时创建管理员账号（密码从 ADMIN_PASSWORD 环境变量读取）
+async fn seed_admin(pool: &sqlx::SqlitePool, admin_password: &str) -> anyhow::Result<()> {
     let count = sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM users WHERE username = 'admin'")
         .fetch_one(pool)
         .await?;
 
     if count == 0 {
         let hash =
-            crate::auth::hash_password("123456").map_err(|e| anyhow::anyhow!("密码加密失败: {e:?}"))?;
+            crate::auth::hash_password(admin_password).map_err(|e| anyhow::anyhow!("密码加密失败: {e:?}"))?;
         sqlx::query(
             "INSERT INTO users (username, password_hash, is_admin, created_at) VALUES ('admin', ?, 1, ?)",
         )
@@ -85,7 +85,7 @@ async fn seed_admin(pool: &sqlx::SqlitePool) -> anyhow::Result<()> {
         .bind(models::now())
         .execute(pool)
         .await?;
-        tracing::info!("已创建管理员账号 admin / 123456");
+        tracing::info!("已创建管理员账号 admin");
     }
     Ok(())
 }

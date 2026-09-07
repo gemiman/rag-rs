@@ -1,0 +1,4 @@
+#!/bin/sh
+# 提交成功后，清掉门禁标记，下次提交必须重新跑测试和检查
+rm -f .git/quality-gates/tests.status .git/quality-gates/quality.status
+exit 0

@@ -39,6 +39,7 @@ OPENAI_API_KEY=你的百炼APIKey
 OPENAI_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
 LLM_MODEL=qwen-plus
 EMBEDDING_MODEL=text-embedding-v3
+ADMIN_PASSWORD=管理员初始密码
 ```
 
 ### 3. 启动后端
@@ -51,7 +52,7 @@ cargo run
 启动后：
 - 后端地址：http://127.0.0.1:8000
 - API 文档：http://127.0.0.1:8000/swagger-ui
-- 首次启动自动创建管理员 `admin / 123456`
+- 首次启动自动创建管理员 `admin`（初始密码由 `.env` 的 `ADMIN_PASSWORD` 决定，默认 `123456`）
 
 ### 4. 启动前端
 
@@ -98,3 +99,7 @@ npm run dev
 ├── docker-compose.yml # Redis Stack
 └── README.md
 ```
+
+## 更新日志
+
+- 2026-09：管理员初始密码从「写死在代码里」改为「从 `.env` 的 `ADMIN_PASSWORD` 读取」（安全优化），默认仍是 admin / 123456。

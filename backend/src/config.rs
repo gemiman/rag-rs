@@ -23,6 +23,8 @@ pub struct Config {
     pub port: u16,
     /// JWT 签名密钥
     pub jwt_secret: String,
+    /// 管理员初始密码（首次启动创建 admin 账号时使用）
+    pub admin_password: String,
 }
 
 impl Config {
@@ -46,6 +48,7 @@ impl Config {
             host: env_or("HOST", "127.0.0.1"),
             port: env_or("PORT", "8000").parse().context("PORT 必须是数字")?,
             jwt_secret: env("JWT_SECRET")?,
+            admin_password: env("ADMIN_PASSWORD")?,
         })
     }
 }

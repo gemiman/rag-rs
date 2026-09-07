@@ -13,8 +13,9 @@ data/
 *.db
 *.db-journal
 
-# 本地工具状态（保留 .claude/skills/ 项目级技能）
+# 本地工具状态（保留 .claude/skills/ 项目级技能、.claude/agents/ 子代理）
 .claude/*
 !.claude/skills/
+!.claude/agents/
 .DS_Store
 *.local
