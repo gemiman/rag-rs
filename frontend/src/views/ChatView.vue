@@ -58,7 +58,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted } from 'vue'
+import { ref, reactive, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import api from '../api'
@@ -127,7 +127,8 @@ async function send() {
 
   question.value = ''
   messages.value.push({ id: Date.now(), role: 'user', content: q, citations: [] })
-  const assistantMsg = { id: Date.now() + 1, role: 'assistant', content: '', citations: [] }
+  // 用 reactive 包裹，保证流式追加内容时界面能自动刷新
+  const assistantMsg = reactive({ id: Date.now() + 1, role: 'assistant', content: '', citations: [] })
   messages.value.push(assistantMsg)
   streaming.value = true
   scrollToBottom()
